@@ -1,0 +1,7 @@
+media/private-originals/*
+!media/private-originals/.gitkeep
+
+*.DS_Store
+__pycache__/
+*.pyc
+work/
