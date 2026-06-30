@@ -93,9 +93,11 @@
     els.intro.textContent = site.intro;
     els.year.textContent = new Date().getFullYear();
     restoreTheme();
+    preloadCriticalPhotos();
     renderFeature();
     renderHeroSummary();
     renderHeroMiniGrid();
+    observeImageLoading(els.heroMiniGrid);
     renderMusic();
     startFeatureCarousel();
     renderFilters();
@@ -114,9 +116,10 @@
     els.feature.style.setProperty("--feature-bg", `url("${versionedSrc(photo.thumb || photo.src)}")`);
     const media = photo.type === "video"
       ? `<video src="${versionedSrc(photo.src)}"${photo.thumb ? ` poster="${versionedSrc(photo.thumb)}"` : ""} muted playsinline preload="metadata"></video>`
-      : `<img src="${versionedSrc(photo.src)}" alt="${photo.title}" loading="eager">`;
+      : `<img src="${versionedSrc(photo.src)}" alt="${photo.title}" loading="eager" fetchpriority="high" decoding="async">`;
     const typeLabel = photo.type === "video" ? "视频" : "照片";
     els.feature.innerHTML = `
+      <span class="media-loading" aria-hidden="true"></span>
       ${media}
       <figcaption>
         <div>
@@ -134,6 +137,10 @@
         </div>
       </figcaption>
     `;
+    const featureImage = els.feature.querySelector("img");
+    if (featureImage) {
+      markLoaded(featureImage);
+    }
     refreshIcons();
   }
 
@@ -154,9 +161,10 @@
       .map((photo, index) => {
         const media = (photo.type || "photo") === "video"
           ? renderVideoPreview(photo)
-          : `<img src="${versionedSrc(photo.thumb)}" alt="${photo.title}" loading="${index === 0 ? "eager" : "lazy"}">`;
+          : `<img src="${versionedSrc(photo.thumb)}" alt="${photo.title}" loading="${index === 0 ? "eager" : "lazy"}" decoding="async">`;
         return `
           <button class="hero-mini-card" type="button" data-hero-index="${index}" aria-label="查看 ${photo.title}">
+            <span class="media-loading" aria-hidden="true"></span>
             ${media}
             <span>${photo.title}</span>
           </button>
@@ -195,12 +203,13 @@
         const type = photo.type || "photo";
         const media = type === "video"
           ? renderVideoPreview(photo)
-          : `<img src="${versionedSrc(photo.thumb)}" alt="${photo.title}" loading="lazy">`;
+          : `<img src="${versionedSrc(photo.thumb)}" alt="${photo.title}" loading="lazy" decoding="async">`;
         const typeIcon = type === "video" ? "play" : "image";
         const typeLabel = type === "video" ? "视频" : "照片";
         return `
           <article class="photo-card" tabindex="0" data-index="${index}" data-type="${type}">
             <span class="photo-media" style="--ratio: ${ratio}">
+              <span class="media-loading" aria-hidden="true"></span>
               ${media}
               <span class="media-badge" aria-label="${typeLabel}">
                 <i data-lucide="${typeIcon}"></i>
@@ -235,6 +244,7 @@
     renderFilters();
     renderStats(state.visiblePhotos);
     renderGallery(state.visiblePhotos);
+    observeImageLoading(els.gallery);
     refreshIcons();
   }
 
@@ -621,7 +631,7 @@
 
   function renderVideoPreview(photo) {
     if (photo.thumb) {
-      return `<img src="${versionedSrc(photo.thumb)}" alt="${photo.title} 视频封面" loading="lazy">`;
+      return `<img src="${versionedSrc(photo.thumb)}" alt="${photo.title} 视频封面" loading="lazy" decoding="async">`;
     }
     return `<video src="${versionedSrc(photo.src)}" muted playsinline preload="metadata" aria-label="${photo.title} 视频预览"></video>`;
   }
@@ -642,6 +652,48 @@
 
   function versionedSrc(src) {
     return withAssetVersion(src);
+  }
+
+  function preloadCriticalPhotos() {
+    photos.slice(0, 6).forEach((photo, index) => {
+      const href = versionedSrc(photo.thumb || photo.src);
+      if (!href) return;
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = href;
+      if (index === 0) {
+        link.fetchPriority = "high";
+      }
+      document.head.appendChild(link);
+    });
+  }
+
+  function observeImageLoading(root) {
+    root.querySelectorAll("img").forEach(markLoaded);
+  }
+
+  function markLoaded(image) {
+    if (image.complete && image.naturalWidth > 0) {
+      image.classList.add("is-loaded");
+      markImageParentLoaded(image);
+      return;
+    }
+    image.addEventListener("load", () => {
+      image.classList.add("is-loaded");
+      markImageParentLoaded(image);
+    }, { once: true });
+    image.addEventListener("error", () => {
+      image.classList.add("is-loaded");
+      markImageParentLoaded(image);
+    }, { once: true });
+  }
+
+  function markImageParentLoaded(image) {
+    const parent = image.closest(".feature-photo, .hero-mini-card, .photo-media");
+    if (parent) {
+      parent.classList.add("is-loaded");
+    }
   }
 
   async function audioFileExists(src) {
