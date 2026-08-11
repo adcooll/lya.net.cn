@@ -14,6 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_DIR = ROOT / "media" / "public"
 OUTPUT = ROOT / "photos.generated.js"
+METADATA_PATH = ROOT / "media" / "photo-metadata.json"
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".avif"}
 VIDEO_EXTS = {".mp4", ".mov", ".m4v", ".webm"}
@@ -95,9 +96,18 @@ def display_dimensions(width: int, height: int) -> tuple[int, int]:
     return width, height
 
 
-def build_item(path: Path, index: int) -> dict:
+def load_metadata() -> dict[str, dict[str, str]]:
+    if not METADATA_PATH.exists():
+        return {}
+    with METADATA_PATH.open("r", encoding="utf-8") as handle:
+        data = json.load(handle)
+    return data if isinstance(data, dict) else {}
+
+
+def build_item(path: Path, index: int, metadata_overrides: dict[str, dict[str, str]]) -> dict:
     media_type = "video" if path.suffix.lower() in VIDEO_EXTS else "photo"
     metadata = read_sips_metadata(path) if media_type == "photo" else {}
+    override = metadata_overrides.get(public_path(path), {})
     width = int(metadata.get("pixelWidth") or 4)
     height = int(metadata.get("pixelHeight") or 3)
     display_width, display_height = display_dimensions(width, height)
@@ -110,8 +120,8 @@ def build_item(path: Path, index: int) -> dict:
         "type": media_type,
         "title": title,
         "album": album,
-        "date": parse_creation(metadata.get("creation")),
-        "location": metadata_location(metadata),
+        "date": override.get("date") or parse_creation(metadata.get("creation")),
+        "location": override.get("location") or metadata_location(metadata),
         "description": "从 Mac 照片 App 筛选后导出的发布版素材。",
         "tags": ["孩子"],
         "src": public_path(path),
@@ -177,7 +187,15 @@ def main() -> None:
             )
         )
     ]
-    items = [build_item(path, index) for index, path in enumerate(files, start=1)]
+    metadata_overrides = load_metadata()
+    items = [
+        build_item(path, index, metadata_overrides)
+        for index, path in enumerate(files, start=1)
+    ]
+    items.sort(key=lambda item: (item["date"], item["id"]), reverse=True)
+    for index, item in enumerate(items, start=1):
+        if item["album"] == "LYA":
+            item["title"] = f"LYA {index:02d}"
     if items:
         items[0]["featured"] = True
 
