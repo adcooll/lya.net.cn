@@ -382,7 +382,10 @@ function readCookie(header, name) {
 
 function hasSameOrigin(request, url) {
   const origin = request.headers.get("origin");
-  return !origin || origin === url.origin;
+  if (!origin) return true;
+  // EdgeOne invokes Cloud Functions through an internal URL, while browsers
+  // retain the public lya.net.cn origin. Keep the production origin explicit.
+  return origin === "https://lya.net.cn" || origin === url.origin;
 }
 
 function clientRateKey(context) {

@@ -17,7 +17,7 @@ function request(path, options = {}) {
     body = JSON.stringify(options.body);
   }
   return onRequest({
-    request: new Request(`https://lya.net.cn/api/family${path}`, {
+    request: new Request(options.requestUrl || `https://lya.net.cn/api/family${path}`, {
       method: options.method || "GET",
       headers,
       body
@@ -73,6 +73,17 @@ test("cross-origin writes are rejected", async () => {
     clientIp: "127.0.0.4"
   });
   assert.equal(response.status, 403);
+});
+
+test("the public origin is accepted behind EdgeOne's internal function URL", async () => {
+  const response = await request("/login", {
+    method: "POST",
+    headers: { origin: "https://lya.net.cn" },
+    body: { password },
+    requestUrl: "https://edgeone-function-internal/api/family/login",
+    clientIp: "127.0.0.6"
+  });
+  assert.equal(response.status, 200);
 });
 
 test("upload URL requires a family session", async () => {
