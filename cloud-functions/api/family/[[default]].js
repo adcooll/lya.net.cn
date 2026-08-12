@@ -12,6 +12,7 @@ const SESSION_SECONDS = 7 * 24 * 60 * 60;
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 const MAX_PHOTOS = 500;
 const PENDING_SECONDS = 20 * 60;
+const VALID_SUBJECTS = new Set(["li-yu-an", "li-yu-en", "together"]);
 const loginAttempts = new Map();
 
 export default async function onRequest(context) {
@@ -114,6 +115,7 @@ async function createPhotoUpload(request) {
   const height = Number(input.height);
   const sha = String(input.sha256 || "").toLowerCase();
   const date = validDate(input.date) ? input.date : today();
+  const subject = String(input.subject || "");
 
   if (!Number.isInteger(size) || size < 1 || size > MAX_UPLOAD_BYTES) {
     return json({ error: "照片压缩后需小于 4MB" }, 400);
@@ -123,6 +125,9 @@ async function createPhotoUpload(request) {
   }
   if (!/^[a-f0-9]{64}$/.test(sha)) {
     return json({ error: "照片校验值无效" }, 400);
+  }
+  if (!VALID_SUBJECTS.has(subject)) {
+    return json({ error: "请选择李予安、李予恩或两人一起" }, 400);
   }
 
   const store = getStore(STORE_NAME);
@@ -150,6 +155,7 @@ async function createPhotoUpload(request) {
     width,
     height,
     date,
+    subject,
     createdAt: new Date().toISOString()
   };
 
@@ -208,6 +214,7 @@ async function publishPhoto(request) {
     type: "photo",
     title,
     album: "家庭上传",
+    subject: pending.subject,
     date: pending.date,
     location,
     description: "由家庭成员上传。",
@@ -319,6 +326,7 @@ function publicPhoto(photo) {
     type: "photo",
     title: photo.title,
     album: "家庭上传",
+    subject: VALID_SUBJECTS.has(photo.subject) ? photo.subject : "li-yu-an",
     date: photo.date,
     location: photo.location || "地点未提供",
     description: "由家庭成员上传。",

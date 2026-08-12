@@ -3,17 +3,20 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="LYA Photo 家庭照片上传">
+    <meta name="description" content="予安与予恩家庭照片上传">
     <meta name="theme-color" content="#f6f3ec">
-    <title>上传照片 | LYA Photo</title>
+    <title>上传照片｜予安 · 予恩</title>
     <link rel="stylesheet" href="/styles.css?v=20260812-upload">
     <link rel="stylesheet" href="/upload/upload.css?v=20260812-upload">
   </head>
   <body class="upload-page">
     <header class="site-header upload-header">
-      <a class="brand" href="/" aria-label="返回 LYA Photo">
-        <span class="brand-mark">LYA</span>
-        <span class="brand-text">Photo</span>
+      <a class="brand" href="/" aria-label="返回家庭相册">
+        <span class="brand-mark">安恩</span>
+        <span class="brand-copy">
+          <strong>予安 · 予恩</strong>
+          <small>Family album</small>
+        </span>
       </a>
       <a class="icon-button" href="/" aria-label="返回相册" title="返回相册">
         <i data-lucide="arrow-left"></i>
@@ -24,7 +27,7 @@
       <section class="upload-title-band" aria-labelledby="uploadTitle">
         <p class="eyebrow">Family upload</p>
         <h1 id="uploadTitle">上传照片</h1>
-        <p>仅发布孩子单独出现的照片。成人合影、学校与住址信息请留在私人相册。</p>
+        <p>先选择照片属于李予安、李予恩还是两人一起，再直接发布到对应相册。</p>
       </section>
 
       <section class="auth-panel" id="loginPanel" aria-labelledby="loginTitle">
@@ -60,6 +63,22 @@
             <h2 id="workspaceTitle">选择孩子的照片</h2>
             <p>照片会压缩为最长边 1600px 的 JPEG，并移除原始定位信息。</p>
           </div>
+
+          <fieldset class="subject-picker">
+            <legend>发布到哪个相册</legend>
+            <label>
+              <input type="radio" name="photoSubject" value="li-yu-an">
+              <span><strong>李予安</strong><small>大娃单独出现</small></span>
+            </label>
+            <label>
+              <input type="radio" name="photoSubject" value="li-yu-en">
+              <span><strong>李予恩</strong><small>小娃单独出现</small></span>
+            </label>
+            <label>
+              <input type="radio" name="photoSubject" value="together">
+              <span><strong>两人一起</strong><small>两个孩子同框</small></span>
+            </label>
+          </fieldset>
 
           <label class="file-picker" for="photoInput">
             <i data-lucide="images"></i>

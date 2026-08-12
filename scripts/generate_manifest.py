@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_DIR = ROOT / "media" / "public"
 OUTPUT = ROOT / "photos.generated.js"
 METADATA_PATH = ROOT / "media" / "photo-metadata.json"
+VALID_SUBJECTS = {"li-yu-an", "li-yu-en", "together"}
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".avif"}
 VIDEO_EXTS = {".mp4", ".mov", ".m4v", ".webm"}
@@ -111,18 +112,22 @@ def build_item(path: Path, index: int, metadata_overrides: dict[str, dict[str, s
     width = int(metadata.get("pixelWidth") or 4)
     height = int(metadata.get("pixelHeight") or 3)
     display_width, display_height = display_dimensions(width, height)
-    album = path.parent.name if path.parent != PUBLIC_DIR else "成长"
+    album = path.parent.name if path.parent != PUBLIC_DIR else "成长记录"
     if album == "photos-app":
-        album = "LYA"
-    title = f"{album} {index:02d}" if album == "LYA" else title_from_stem(path.stem)
+        album = "成长记录"
+    title = f"予安 {index:02d}" if album == "成长记录" else title_from_stem(path.stem)
+    subject = override.get("subject")
+    if subject not in VALID_SUBJECTS:
+        subject = "li-yu-an"
     item = {
         "id": re.sub(r"[^a-zA-Z0-9_-]+", "-", path.stem).strip("-") or f"media-{index}",
         "type": media_type,
         "title": title,
         "album": album,
+        "subject": subject,
         "date": override.get("date") or parse_creation(metadata.get("creation")),
         "location": override.get("location") or metadata_location(metadata),
-        "description": "从 Mac 照片 App 筛选后导出的发布版素材。",
+        "description": "李予安的成长记录。",
         "tags": ["孩子"],
         "src": public_path(path),
         "thumb": public_path(path),
@@ -133,7 +138,7 @@ def build_item(path: Path, index: int, metadata_overrides: dict[str, dict[str, s
     }
     if media_type == "video":
         item["thumb"] = find_thumb(path) or ""
-        item["album"] = "视频" if item["album"] == "public" else item["album"]
+        item["album"] = "视频" if item["album"] == "成长记录" else item["album"]
         item["width"] = 9
         item["height"] = 16
     return item
@@ -154,10 +159,10 @@ def main() -> None:
     exported_items = load_exported_manifests()
     if exported_items:
         data = {
-            "title": "LYA Photo",
+            "title": "予安 · 予恩",
             "domain": "lya.net.cn",
             "version": build_version(),
-            "intro": "给孩子的成长片段留一个安静、好翻看的地方。",
+            "intro": "把各自的成长与一起走过的日子，放在同一个家里。",
             "photos": exported_items,
         }
         OUTPUT.write_text(
@@ -194,16 +199,16 @@ def main() -> None:
     ]
     items.sort(key=lambda item: (item["date"], item["id"]), reverse=True)
     for index, item in enumerate(items, start=1):
-        if item["album"] == "LYA":
-            item["title"] = f"LYA {index:02d}"
+        if item["album"] == "成长记录":
+            item["title"] = f"予安 {index:02d}"
     if items:
         items[0]["featured"] = True
 
     data = {
-        "title": "LYA Photo",
+        "title": "予安 · 予恩",
         "domain": "lya.net.cn",
         "version": build_version(),
-        "intro": "给孩子的成长片段留一个安静、好翻看的地方。",
+        "intro": "把各自的成长与一起走过的日子，放在同一个家里。",
         "photos": items,
     }
     OUTPUT.write_text(

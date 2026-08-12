@@ -94,10 +94,34 @@ test("upload URL requires a family session", async () => {
       width: 800,
       height: 600,
       date: "2026-08-12",
-      sha256: "a".repeat(64)
+      sha256: "a".repeat(64),
+      subject: "li-yu-an"
     }
   });
   assert.equal(response.status, 401);
+});
+
+test("upload URL rejects an unknown child album before storage", async () => {
+  const login = await request("/login", {
+    method: "POST",
+    body: { password },
+    clientIp: "127.0.0.7"
+  });
+  const cookie = login.headers.get("set-cookie").split(";")[0];
+  const response = await request("/upload-url", {
+    method: "POST",
+    headers: { cookie },
+    body: {
+      size: 1024,
+      width: 800,
+      height: 600,
+      date: "2026-08-12",
+      sha256: "b".repeat(64),
+      subject: "unknown"
+    }
+  });
+  assert.equal(response.status, 400);
+  assert.deepEqual(await response.json(), { error: "请选择李予安、李予恩或两人一起" });
 });
 
 test("missing production secrets keeps login disabled", async () => {

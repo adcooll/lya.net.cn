@@ -3,32 +3,33 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="LYA Photo - 家庭照片和视频浏览网站">
-    <meta name="theme-color" content="#f6f3ec">
-    <meta property="og:title" content="LYA Photo">
-    <meta property="og:description" content="lya.net.cn 的家庭照片和视频浏览网站">
+    <meta name="description" content="李予安与李予恩的家庭成长相册">
+    <meta name="theme-color" content="#f7f7f2">
+    <meta property="og:title" content="予安 · 予恩｜家庭相册">
+    <meta property="og:description" content="李予安与李予恩的照片、视频和共同成长记录">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://lya.net.cn/">
-    <title>LYA Photo</title>
-    <link rel="preconnect" href="https://images.unsplash.com">
-    <link rel="preconnect" href="https://images.pexels.com">
-    <link rel="stylesheet" href="styles.css?v=20260807-glass">
+    <title>予安 · 予恩｜家庭相册</title>
+    <link rel="stylesheet" href="styles.css?v=20260812-family">
   </head>
-  <body>
+  <body data-view="all">
     <header class="site-header">
-      <a class="brand" href="/" aria-label="LYA Photo 首页">
-        <span class="brand-mark">LYA</span>
-        <span class="brand-text">Photo</span>
+      <a class="brand" href="/" aria-label="予安与予恩家庭相册首页">
+        <span class="brand-mark" aria-hidden="true">安恩</span>
+        <span class="brand-copy">
+          <strong>予安 · 予恩</strong>
+          <small>Family album</small>
+        </span>
       </a>
 
       <div class="header-actions">
         <label class="search-box" aria-label="搜索照片或视频">
           <i data-lucide="search"></i>
-          <input id="searchInput" type="search" placeholder="搜索标题、地点、标签">
+          <input id="searchInput" type="search" placeholder="搜索日期、地点或标题">
         </label>
-        <a class="upload-link" href="/upload/" aria-label="上传照片" title="上传照片">
+        <a class="upload-link" href="/upload/" aria-label="上传照片">
           <i data-lucide="upload"></i>
-          <span>上传照片</span>
+          <span>上传</span>
         </a>
         <button class="icon-button" id="themeToggle" type="button" aria-label="切换明暗主题" title="切换明暗主题">
           <i data-lucide="moon"></i>
@@ -37,15 +38,13 @@
     </header>
 
     <main>
-      <section class="intro-grid" aria-labelledby="pageTitle">
-        <div class="intro-copy">
-          <div class="hero-title-block">
-            <p class="eyebrow">lya.net.cn</p>
-            <h1 id="pageTitle">LYA Photo</h1>
-            <p id="siteIntro" class="lead"></p>
-          </div>
+      <section class="story-hero" aria-labelledby="pageTitle">
+        <div class="story-copy">
+          <p class="eyebrow" id="viewKicker">两个孩子 · 三本相册</p>
+          <h1 id="pageTitle">予安与予恩</h1>
+          <p class="lead" id="siteIntro">把各自的成长与一起走过的日子，放在同一个家里。</p>
 
-          <div class="hero-summary" aria-label="相册概览">
+          <div class="hero-summary" aria-label="当前相册概览">
             <span class="hero-stat">
               <strong id="heroPhotoCount">0</strong>
               <span>照片</span>
@@ -60,20 +59,40 @@
             </span>
           </div>
 
-          <div class="hero-mini-grid" id="heroMiniGrid" aria-label="近期照片预览"></div>
+          <a class="story-jump" href="#album">
+            <span>查看当前相册</span>
+            <i data-lucide="arrow-down"></i>
+          </a>
         </div>
 
-        <figure class="feature-photo" id="featurePhoto"></figure>
+        <figure class="feature-photo" id="featurePhoto" aria-label="相册轮播"></figure>
       </section>
 
-      <section class="toolbar" aria-label="素材筛选">
-        <div class="filter-group" id="albumFilters"></div>
-        <div class="stats-strip" id="statsStrip"></div>
-      </section>
+      <nav class="people-nav" id="peopleNav" aria-label="选择成长相册"></nav>
 
-      <section class="gallery-section" aria-live="polite">
-        <div class="gallery" id="gallery"></div>
-        <p class="empty-state" id="emptyState" hidden>没有找到素材</p>
+      <section class="album-shell" id="album" aria-labelledby="albumTitle">
+        <header class="album-heading">
+          <div>
+            <p class="section-kicker" id="albumKicker">Family timeline</p>
+            <h2 id="albumTitle">全部时光</h2>
+          </div>
+          <div class="stats-strip" id="statsStrip"></div>
+        </header>
+
+        <div class="toolbar" aria-label="素材筛选">
+          <div class="filter-group" id="albumFilters"></div>
+        </div>
+
+        <div class="gallery" id="gallery" aria-live="polite"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <span class="empty-monogram" id="emptyMonogram" aria-hidden="true">安恩</span>
+          <h3 id="emptyTitle">这里还没有照片</h3>
+          <p id="emptyCopy">下一次上传时选择对应相册，照片就会出现在这里。</p>
+          <a class="empty-upload" href="/upload/">
+            <i data-lucide="image-plus"></i>
+            <span>上传第一张</span>
+          </a>
+        </div>
       </section>
     </main>
 
@@ -105,31 +124,29 @@
     </div>
 
     <footer class="site-footer">
-      <span>© <span id="year"></span> LYA</span>
+      <span>© <span id="year"></span> 予安 · 予恩</span>
       <a href="https://lya.net.cn/">lya.net.cn</a>
     </footer>
 
     <aside class="music-player" aria-label="儿童音乐播放器">
+      <button class="music-button" id="musicPrev" type="button" aria-label="上一首音乐" title="上一首">
+        <i data-lucide="skip-back"></i>
+      </button>
+      <button class="music-button music-play" id="musicToggle" type="button" aria-label="播放或暂停音乐" title="播放或暂停">
+        <i data-lucide="play"></i>
+      </button>
       <div class="music-info">
         <p class="music-label">贝乐虎儿歌</p>
         <p class="music-title" id="musicTitle">准备播放</p>
       </div>
-      <div class="music-controls">
-        <button class="music-button" id="musicPrev" type="button" aria-label="上一首音乐" title="上一首">
-          <i data-lucide="skip-back"></i>
-        </button>
-        <button class="music-button music-play" id="musicToggle" type="button" aria-label="播放或暂停音乐" title="播放/暂停">
-          <i data-lucide="play"></i>
-        </button>
-        <button class="music-button" id="musicNext" type="button" aria-label="下一首音乐" title="下一首">
-          <i data-lucide="skip-forward"></i>
-        </button>
-      </div>
+      <button class="music-button" id="musicNext" type="button" aria-label="下一首音乐" title="下一首">
+        <i data-lucide="skip-forward"></i>
+      </button>
     </aside>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-    <script src="photos.js?v=20260811-media"></script>
+    <script src="photos.js?v=20260812-family"></script>
     <script src="music.js?v=20260630-loading"></script>
-    <script src="app.js?v=20260812-upload"></script>
+    <script src="app.js?v=20260812-family"></script>
   </body>
 </html>

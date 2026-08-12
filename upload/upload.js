@@ -19,6 +19,7 @@
     workspace: document.getElementById("uploadWorkspace"),
     logout: document.getElementById("logoutButton"),
     input: document.getElementById("photoInput"),
+    subjects: [...document.querySelectorAll('input[name="photoSubject"]')],
     title: document.getElementById("photoTitle"),
     location: document.getElementById("photoLocation"),
     queue: document.getElementById("uploadQueue"),
@@ -49,6 +50,7 @@
     els.loginForm.addEventListener("submit", handleLogin);
     els.logout.addEventListener("click", handleLogout);
     els.input.addEventListener("change", () => addFiles([...els.input.files]));
+    els.subjects.forEach((input) => input.addEventListener("change", renderQueue));
     els.publish.addEventListener("click", publishAll);
 
     els.queue.addEventListener("click", (event) => {
@@ -148,7 +150,7 @@
   function renderQueue() {
     els.queueCount.textContent = String(state.items.length);
     els.queueEmpty.hidden = state.items.length > 0;
-    els.publish.disabled = state.uploading || !state.items.some((item) => item.status === "ready" || item.status === "error");
+    els.publish.disabled = state.uploading || !selectedSubject() || !state.items.some((item) => item.status === "ready" || item.status === "error");
     els.queue.innerHTML = state.items.map((item) => `
       <article class="queue-item" data-status="${item.status}">
         <div class="queue-preview">
@@ -173,6 +175,11 @@
   async function publishAll() {
     const pending = state.items.filter((item) => item.status === "ready" || item.status === "error");
     if (!pending.length || state.uploading) return;
+    const subject = selectedSubject();
+    if (!subject) {
+      setStatus(els.uploadStatus, "请先选择照片属于哪个相册");
+      return;
+    }
 
     state.uploading = true;
     setStatus(els.uploadStatus, `准备发布 ${pending.length} 张照片…`);
@@ -198,7 +205,8 @@
             width: optimized.width,
             height: optimized.height,
             date: item.date,
-            sha256
+            sha256,
+            subject
           }
         });
 
@@ -351,6 +359,10 @@
 
   function validDate(value) {
     return /^\d{4}-\d{2}-\d{2}$/.test(value);
+  }
+
+  function selectedSubject() {
+    return els.subjects.find((input) => input.checked)?.value || "";
   }
 
   function isImageFile(file) {

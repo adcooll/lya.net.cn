@@ -197,6 +197,77 @@
   align-items: end;
 }
 
+.subject-picker {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+}
+
+.subject-picker legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.subject-picker label {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 4.75rem;
+  cursor: pointer;
+}
+
+.subject-picker label + label {
+  border-left: 1px solid var(--line);
+}
+
+.subject-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.subject-picker label > span {
+  display: grid;
+  place-content: center;
+  gap: 0.2rem;
+  padding: 0.7rem;
+  text-align: center;
+}
+
+.subject-picker strong {
+  font-size: 0.92rem;
+}
+
+.subject-picker small {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.subject-picker label:has(input:checked) > span {
+  color: #fff;
+  background: var(--accent);
+}
+
+.subject-picker label:has(input:checked) small {
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.subject-picker label:has(input:focus-visible) {
+  outline: 3px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  outline-offset: -3px;
+}
+
 .metadata-fields {
   grid-column: 1 / -1;
   display: grid;
@@ -360,6 +431,15 @@
   .metadata-fields {
     grid-column: auto;
     grid-template-columns: 1fr;
+  }
+
+  .subject-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .subject-picker label + label {
+    border-top: 1px solid var(--line);
+    border-left: 0;
   }
 
   .upload-queue {

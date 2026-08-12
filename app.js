@@ -1,12 +1,60 @@
 (function () {
-  const site = window.PHOTO_SITE;
-  let photos = [...site.photos].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const site = window.PHOTO_SITE || { photos: [] };
+  const SUBJECTS = {
+    all: {
+      label: "全部时光",
+      title: "予安与予恩",
+      kicker: "两个孩子 · 三本相册",
+      intro: "把各自的成长与一起走过的日子，放在同一个家里。",
+      short: "安恩",
+      note: "家庭总览",
+      accent: "#26332e",
+      soft: "var(--surface-soft)"
+    },
+    "li-yu-an": {
+      label: "李予安",
+      title: "李予安",
+      kicker: "大娃 · 独立成长相册",
+      intro: "从初见世界到每一次新的尝试，按时间收藏予安自己的成长。",
+      short: "予安",
+      note: "大娃的照片",
+      accent: "#20745f",
+      soft: "var(--elder-soft)"
+    },
+    "li-yu-en": {
+      label: "李予恩",
+      title: "李予恩",
+      kicker: "小娃 · 独立成长相册",
+      intro: "给予恩留下一本自己的成长册，慢慢收进每一个新表情和新发现。",
+      short: "予恩",
+      note: "小娃的照片",
+      accent: "#c95848",
+      soft: "var(--younger-soft)"
+    },
+    together: {
+      label: "两人一起",
+      title: "予安与予恩",
+      kicker: "两人一起 · 共同相册",
+      intro: "同框的笑脸、一起的游戏，以及只属于两个人的共同成长。",
+      short: "安恩",
+      note: "两个人的合照",
+      accent: "#35658d",
+      soft: "var(--together-soft)"
+    }
+  };
+  const SUBJECT_KEYS = new Set(["li-yu-an", "li-yu-en", "together"]);
+  let photos = (Array.isArray(site.photos) ? site.photos : [])
+    .map(normalizePhoto)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
   const state = {
+    view: viewFromUrl(),
     album: "全部",
     query: "",
-    visiblePhotos: photos,
+    visiblePhotos: [],
+    activePhotos: [],
     activeIndex: 0,
-    featureIndex: Math.max(photos.findIndex((item) => item.featured), 0),
+    featureIndex: 0,
     featureTimer: null,
     musicIndex: 0,
     musicPlaying: false,
@@ -40,37 +88,34 @@
       notes: ["F4", "A4", "C5", "F5", "E5", "C5", "A4", "C5", "D5", "F5", "A5", "G5", "F5", "D5", "C5", "A4"],
       bass: ["F3", "C3", "D3", "A2", "B2", "F3", "C3", "F2"],
       wave: "square"
-    },
-    {
-      title: "原创儿歌风 04",
-      tempo: 172,
-      notes: ["D4", "F4", "A4", "D5", "F5", "D5", "A4", "F4", "E4", "G4", "B4", "E5", "G5", "E5", "B4", "G4"],
-      bass: ["D3", "A2", "D3", "A2", "E3", "B2", "E3", "B2"],
-      wave: "sawtooth"
     }
   ];
 
   const configuredMusic = window.LYA_MUSIC || {};
   const musicTracks = (Array.isArray(configuredMusic.tracks) ? configuredMusic.tracks : [])
     .filter((track) => track && track.title && track.src)
-    .map((track) => ({
-      title: track.title,
-      src: withAssetVersion(track.src),
-      type: "audio"
-    }));
+    .map((track) => ({ title: track.title, src: withAssetVersion(track.src), type: "audio" }));
   const activeMusicTracks = musicTracks.length ? musicTracks : fallbackMusicTracks;
 
   const els = {
+    body: document.body,
+    title: document.getElementById("pageTitle"),
+    viewKicker: document.getElementById("viewKicker"),
     intro: document.getElementById("siteIntro"),
+    albumKicker: document.getElementById("albumKicker"),
+    albumTitle: document.getElementById("albumTitle"),
+    peopleNav: document.getElementById("peopleNav"),
     heroPhotoCount: document.getElementById("heroPhotoCount"),
     heroVideoCount: document.getElementById("heroVideoCount"),
     heroYearRange: document.getElementById("heroYearRange"),
-    heroMiniGrid: document.getElementById("heroMiniGrid"),
     feature: document.getElementById("featurePhoto"),
     filters: document.getElementById("albumFilters"),
     stats: document.getElementById("statsStrip"),
     gallery: document.getElementById("gallery"),
     empty: document.getElementById("emptyState"),
+    emptyMonogram: document.getElementById("emptyMonogram"),
+    emptyTitle: document.getElementById("emptyTitle"),
+    emptyCopy: document.getElementById("emptyCopy"),
     search: document.getElementById("searchInput"),
     year: document.getElementById("year"),
     themeToggle: document.getElementById("themeToggle"),
@@ -90,21 +135,13 @@
   };
 
   function init() {
-    els.intro.textContent = site.intro;
     els.year.textContent = new Date().getFullYear();
     restoreTheme();
     preloadCriticalPhotos();
-    renderFeature();
-    renderHeroSummary();
-    renderHeroMiniGrid();
-    observeImageLoading(els.heroMiniGrid);
+    renderView();
     renderMusic();
-    startFeatureCarousel();
-    renderFilters();
-    applyFilters();
     bindEvents();
     requestMusicAutoplay();
-    refreshIcons();
     loadFamilyPhotos();
   }
 
@@ -117,158 +154,183 @@
       if (!response.ok) return;
       const data = await response.json();
       const uploaded = Array.isArray(data.photos)
-        ? data.photos.filter(validFamilyPhoto).map((photo) => ({ ...photo, dynamic: true }))
+        ? data.photos.filter(validFamilyPhoto).map((photo) => normalizePhoto({ ...photo, dynamic: true }))
         : [];
       if (!uploaded.length) return;
 
-      const known = new Set(photos.map((photo) => photo.id || photo.src));
+      const known = new Set(photos.flatMap((photo) => [photo.id, photo.src]));
       const newPhotos = uploaded.filter((photo) => !known.has(photo.id) && !known.has(photo.src));
       if (!newPhotos.length) return;
 
       photos = [...photos, ...newPhotos].sort((a, b) => new Date(b.date) - new Date(a.date));
       state.album = "全部";
       state.featureIndex = 0;
-      renderFeature();
-      renderHeroSummary();
-      renderHeroMiniGrid();
-      observeImageLoading(els.heroMiniGrid);
-      applyFilters();
-      restartFeatureCarousel();
+      renderView();
     } catch (error) {
-      // The static album remains fully available when family storage is offline.
+      // The static album remains available when family storage is offline.
     }
   }
 
+  function renderView() {
+    const config = SUBJECTS[state.view];
+    els.body.dataset.view = state.view;
+    els.title.textContent = config.title;
+    els.viewKicker.textContent = config.kicker;
+    els.intro.textContent = config.intro;
+    els.albumKicker.textContent = state.view === "all" ? "Family timeline" : config.note;
+    els.albumTitle.textContent = config.label;
+    document.title = `${config.title}｜家庭相册`;
+    renderPeopleNav();
+    renderHeroSummary();
+    renderFeature();
+    applyFilters();
+    restartFeatureCarousel();
+    refreshIcons();
+  }
+
+  function renderPeopleNav() {
+    els.peopleNav.innerHTML = Object.entries(SUBJECTS).map(([key, config]) => {
+      const count = photosForView(key).length;
+      const current = key === state.view ? ' aria-current="page"' : "";
+      return `
+        <button class="person-tab" type="button" data-view="${key}"${current}
+          style="--tab-accent:${config.accent};--tab-soft:${config.soft}">
+          <span class="person-monogram" aria-hidden="true">${config.short}</span>
+          <span class="person-label">
+            <strong>${config.label}</strong>
+            <small>${config.note}</small>
+          </span>
+          <em class="person-count">${count} 件</em>
+        </button>
+      `;
+    }).join("");
+  }
+
   function renderFeature() {
-    const photo = photos[state.featureIndex] || photos[0];
-    if (!photo) {
-      els.feature.innerHTML = "";
+    const items = photosForView(state.view);
+    if (!items.length) {
+      const config = SUBJECTS[state.view];
+      els.feature.style.removeProperty("--feature-ratio");
+      els.feature.innerHTML = `
+        <div class="feature-empty">
+          <strong>${config.short}</strong>
+          <p>等待第一张属于${config.label}的照片</p>
+        </div>
+      `;
       return;
     }
-    els.feature.style.setProperty("--feature-bg", `url("${versionedSrc(photo.thumb || photo.src)}")`);
+
+    state.featureIndex = (state.featureIndex + items.length) % items.length;
+    const photo = items[state.featureIndex];
+    els.feature.style.setProperty("--feature-ratio", `${Number(photo.width) || 4} / ${Number(photo.height) || 3}`);
     const media = photo.type === "video"
-      ? `<video src="${versionedSrc(photo.src)}"${photo.thumb ? ` poster="${versionedSrc(photo.thumb)}"` : ""} muted playsinline preload="metadata"></video>`
-      : `<img src="${versionedSrc(photo.src)}" alt="${photo.title}" loading="eager" fetchpriority="high" decoding="async">`;
+      ? `<video src="${escapeAttr(versionedSrc(photo.src))}"${photo.thumb ? ` poster="${escapeAttr(versionedSrc(photo.thumb))}"` : ""} muted playsinline preload="metadata"></video>`
+      : `<img src="${escapeAttr(versionedSrc(photo.src))}" alt="${escapeAttr(photo.title)}" loading="eager" fetchpriority="high" decoding="async">`;
     const typeLabel = photo.type === "video" ? "视频" : "照片";
     els.feature.innerHTML = `
       <span class="media-loading" aria-hidden="true"></span>
       ${media}
+      <button class="feature-open" type="button" data-feature-open aria-label="查看 ${escapeAttr(photo.title)}"></button>
       <figcaption>
         <div>
-          <p class="feature-title">${photo.title}</p>
-          <p class="feature-meta">${photoMeta(photo)}</p>
+          <p class="feature-title">${escapeHtml(photo.title)}</p>
+          <p class="feature-meta">${escapeHtml(photoMeta(photo))}</p>
         </div>
         <div class="feature-actions">
           <button class="feature-nav" type="button" data-feature-dir="-1" aria-label="上一张轮播照片" title="上一张">
             <i data-lucide="chevron-left"></i>
           </button>
-          <span class="feature-chip">${state.featureIndex + 1}/${photos.length} · ${photo.album} · ${typeLabel}</span>
+          <span class="feature-chip">${state.featureIndex + 1}/${items.length} · ${escapeHtml(subjectLabel(photo))} · ${typeLabel}</span>
           <button class="feature-nav" type="button" data-feature-dir="1" aria-label="下一张轮播照片" title="下一张">
             <i data-lucide="chevron-right"></i>
           </button>
         </div>
       </figcaption>
     `;
-    const featureImage = els.feature.querySelector("img");
-    if (featureImage) {
-      markLoaded(featureImage);
-    }
+    const image = els.feature.querySelector("img");
+    if (image) markLoaded(image);
     refreshIcons();
   }
 
   function renderHeroSummary() {
-    const years = photos
+    const items = photosForView(state.view);
+    const years = items
       .map((photo) => new Date(photo.date).getFullYear())
-      .filter((year) => Number.isFinite(year));
-    const minYear = Math.min(...years);
-    const maxYear = Math.max(...years);
-    els.heroPhotoCount.textContent = photos.filter((photo) => (photo.type || "photo") === "photo").length;
-    els.heroVideoCount.textContent = photos.filter((photo) => photo.type === "video").length;
-    els.heroYearRange.textContent = minYear === maxYear ? String(maxYear) : `${minYear}-${maxYear}`;
-  }
-
-  function renderHeroMiniGrid() {
-    const previewItems = photos.slice(0, 4);
-    els.heroMiniGrid.innerHTML = previewItems
-      .map((photo, index) => {
-        const media = (photo.type || "photo") === "video"
-          ? renderVideoPreview(photo)
-          : `<img src="${versionedSrc(photo.thumb)}" alt="${photo.title}" loading="${index === 0 ? "eager" : "lazy"}" decoding="async">`;
-        return `
-          <button class="hero-mini-card" type="button" data-hero-index="${index}" aria-label="查看 ${photo.title}">
-            <span class="media-loading" aria-hidden="true"></span>
-            ${media}
-            <span>${photo.title}</span>
-          </button>
-        `;
-      })
-      .join("");
+      .filter(Number.isFinite);
+    const minYear = years.length ? Math.min(...years) : null;
+    const maxYear = years.length ? Math.max(...years) : null;
+    els.heroPhotoCount.textContent = items.filter((photo) => photo.type === "photo").length;
+    els.heroVideoCount.textContent = items.filter((photo) => photo.type === "video").length;
+    els.heroYearRange.textContent = minYear === null ? "--" : (minYear === maxYear ? String(maxYear) : `${minYear}-${maxYear}`);
   }
 
   function renderFilters() {
-    const albums = ["全部", ...new Set(photos.map((photo) => photo.album))];
-    els.filters.innerHTML = albums
-      .map((album) => {
-        const pressed = album === state.album ? "true" : "false";
-        return `<button class="filter-button" type="button" data-album="${album}" aria-pressed="${pressed}">${album}</button>`;
-      })
-      .join("");
+    const viewItems = photosForView(state.view);
+    const albums = ["全部", ...new Set(viewItems.map((photo) => photo.album).filter(Boolean))];
+    els.filters.innerHTML = albums.map((album) => {
+      const pressed = album === state.album ? "true" : "false";
+      return `<button class="filter-button" type="button" data-album="${escapeAttr(album)}" aria-pressed="${pressed}">${escapeHtml(album)}</button>`;
+    }).join("");
   }
 
   function renderStats(items) {
-    const years = new Set(items.map((photo) => new Date(photo.date).getFullYear()));
-    const albums = new Set(items.map((photo) => photo.album));
+    const years = new Set(items.map((photo) => new Date(photo.date).getFullYear()).filter(Number.isFinite));
+    const subjects = new Set(items.map((photo) => photo.subject));
     els.stats.innerHTML = `
       <span class="stat"><strong>${items.length}</strong> 件</span>
       <span class="stat"><strong>${items.filter((photo) => photo.type === "video").length}</strong> 视频</span>
-      <span class="stat"><strong>${albums.size}</strong> 组</span>
+      <span class="stat"><strong>${subjects.size}</strong> 相册</span>
       <span class="stat"><strong>${years.size}</strong> 年</span>
     `;
   }
 
   function renderGallery(items) {
-    els.empty.hidden = items.length > 0;
-    els.gallery.innerHTML = items
-      .map((photo, index) => {
-        const ratio = `${photo.width} / ${photo.height}`;
-        const tags = photo.tags.map((tag) => `<span class="tag">${tag}</span>`).join("");
-        const type = photo.type || "photo";
-        const media = type === "video"
-          ? renderVideoPreview(photo)
-          : `<img src="${versionedSrc(photo.thumb)}" alt="${photo.title}" loading="lazy" decoding="async">`;
-        const typeIcon = type === "video" ? "play" : "image";
-        const typeLabel = type === "video" ? "视频" : "照片";
-        return `
-          <article class="photo-card" tabindex="0" data-index="${index}" data-type="${type}">
-            <span class="photo-media" style="--ratio: ${ratio}">
-              <span class="media-loading" aria-hidden="true"></span>
-              ${media}
-              <span class="media-badge" aria-label="${typeLabel}">
-                <i data-lucide="${typeIcon}"></i>
-              </span>
-            </span>
-            <div class="photo-info">
-              <h2>${photo.title}</h2>
-              <p>${photoMeta(photo)} · ${typeLabel}</p>
-              <div class="tags">${tags}</div>
-            </div>
-          </article>
-        `;
-      })
-      .join("");
+    els.gallery.innerHTML = items.map((photo, index) => {
+      const type = photo.type || "photo";
+      const media = type === "video"
+        ? renderVideoPreview(photo)
+        : `<img src="${escapeAttr(versionedSrc(photo.thumb || photo.src))}" alt="${escapeAttr(photo.title)}" loading="lazy" decoding="async">`;
+      const typeIcon = type === "video" ? "play" : "image";
+      const typeLabel = type === "video" ? "视频" : "照片";
+      const orientation = Number(photo.height) > Number(photo.width) ? "portrait" : "landscape";
+      const tags = [subjectLabel(photo), ...(photo.tags || []).filter((tag) => tag !== "孩子")]
+        .slice(0, 3)
+        .map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`)
+        .join("");
+      return `
+        <article class="photo-card" tabindex="0" data-index="${index}" data-type="${type}" data-orientation="${orientation}">
+          <span class="photo-media">
+            <span class="media-loading" aria-hidden="true"></span>
+            ${media}
+            <span class="media-badge" aria-label="${typeLabel}"><i data-lucide="${typeIcon}"></i></span>
+          </span>
+          <div class="photo-info">
+            <h2>${escapeHtml(photo.title)}</h2>
+            <p>${escapeHtml(photoMeta(photo))} · ${typeLabel}</p>
+            <div class="tags">${tags}</div>
+          </div>
+        </article>
+      `;
+    }).join("");
+    observeImageLoading(els.gallery);
   }
 
   function applyFilters() {
     const query = normalize(state.query);
-    state.visiblePhotos = photos.filter((photo) => {
+    const viewItems = photosForView(state.view);
+    const availableAlbums = new Set(viewItems.map((photo) => photo.album));
+    if (state.album !== "全部" && !availableAlbums.has(state.album)) state.album = "全部";
+
+    state.visiblePhotos = viewItems.filter((photo) => {
       const albumMatch = state.album === "全部" || photo.album === state.album;
       const haystack = normalize([
         photo.title,
         photo.album,
         photo.location,
         photo.description,
+        subjectLabel(photo),
         photo.type || "photo",
-        ...photo.tags
+        ...(photo.tags || [])
       ].join(" "));
       return albumMatch && (!query || haystack.includes(query));
     });
@@ -276,11 +338,32 @@
     renderFilters();
     renderStats(state.visiblePhotos);
     renderGallery(state.visiblePhotos);
-    observeImageLoading(els.gallery);
+    renderEmptyState(viewItems.length);
     refreshIcons();
   }
 
+  function renderEmptyState(viewCount) {
+    const empty = state.visiblePhotos.length === 0;
+    els.empty.hidden = !empty;
+    if (!empty) return;
+    const config = SUBJECTS[state.view];
+    els.emptyMonogram.textContent = config.short;
+    if (viewCount && (state.query || state.album !== "全部")) {
+      els.emptyTitle.textContent = "没有找到符合条件的照片";
+      els.emptyCopy.textContent = "换一个搜索词或筛选条件再看看。";
+      return;
+    }
+    els.emptyTitle.textContent = `${config.label}还没有照片`;
+    els.emptyCopy.textContent = "下一次上传时选择这个相册，照片发布后会自动出现在这里。";
+  }
+
   function bindEvents() {
+    els.peopleNav.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-view]");
+      if (!button) return;
+      setView(button.dataset.view);
+    });
+
     els.filters.addEventListener("click", (event) => {
       const button = event.target.closest("[data-album]");
       if (!button) return;
@@ -295,8 +378,7 @@
 
     els.gallery.addEventListener("click", (event) => {
       const card = event.target.closest(".photo-card");
-      if (!card) return;
-      openLightbox(Number(card.dataset.index));
+      if (card) openLightbox(Number(card.dataset.index), state.visiblePhotos);
     });
 
     els.gallery.addEventListener("keydown", (event) => {
@@ -304,39 +386,28 @@
       const card = event.target.closest(".photo-card");
       if (!card) return;
       event.preventDefault();
-      openLightbox(Number(card.dataset.index));
+      openLightbox(Number(card.dataset.index), state.visiblePhotos);
     });
 
     els.feature.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-feature-dir]");
-      if (!button) return;
-      event.preventDefault();
-      showFeature(Number(button.dataset.featureDir));
-      restartFeatureCarousel();
-    });
-
-    els.heroMiniGrid.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-hero-index]");
-      if (!button) return;
-      state.featureIndex = Number(button.dataset.heroIndex);
-      renderFeature();
-      restartFeatureCarousel();
+      const nav = event.target.closest("[data-feature-dir]");
+      if (nav) {
+        showFeature(Number(nav.dataset.featureDir));
+        restartFeatureCarousel();
+        return;
+      }
+      if (event.target.closest("[data-feature-open]")) {
+        openLightbox(state.featureIndex, photosForView(state.view));
+      }
     });
 
     els.lightbox.addEventListener("click", (event) => {
-      if (event.target.closest("[data-close]") || event.target.closest(".lightbox-close")) {
-        closeLightbox();
-      }
-      if (event.target.closest(".lightbox-prev")) {
-        showLightboxPhoto(state.activeIndex - 1);
-      }
-      if (event.target.closest(".lightbox-next")) {
-        showLightboxPhoto(state.activeIndex + 1);
-      }
+      if (event.target.closest("[data-close]") || event.target.closest(".lightbox-close")) closeLightbox();
+      if (event.target.closest(".lightbox-prev")) showLightboxPhoto(state.activeIndex - 1);
+      if (event.target.closest(".lightbox-next")) showLightboxPhoto(state.activeIndex + 1);
     });
 
     els.themeToggle.addEventListener("click", toggleTheme);
-
     els.musicToggle.addEventListener("click", toggleMusic);
     els.musicPrev.addEventListener("click", () => changeMusic(-1));
     els.musicNext.addEventListener("click", () => changeMusic(1));
@@ -349,17 +420,31 @@
     });
 
     document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        stopFeatureCarousel();
-      } else {
-        startFeatureCarousel();
-      }
+      if (document.hidden) stopFeatureCarousel();
+      else startFeatureCarousel();
     });
-
+    window.addEventListener("popstate", () => setView(viewFromUrl(), false));
     window.addEventListener("pagehide", stopMusic);
   }
 
-  function openLightbox(index) {
+  function setView(view, updateUrl = true) {
+    if (!SUBJECTS[view]) view = "all";
+    state.view = view;
+    state.album = "全部";
+    state.featureIndex = 0;
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      if (view === "all") url.searchParams.delete("person");
+      else url.searchParams.set("person", view);
+      history.pushState({ view }, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+    renderView();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function openLightbox(index, items) {
+    if (!items.length) return;
+    state.activePhotos = items;
     showLightboxPhoto(index);
     els.lightbox.classList.add("is-open");
     els.lightbox.setAttribute("aria-hidden", "false");
@@ -375,33 +460,33 @@
   }
 
   function showLightboxPhoto(index) {
-    const count = state.visiblePhotos.length;
+    const count = state.activePhotos.length;
     if (!count) return;
     state.activeIndex = (index + count) % count;
-    const photo = state.visiblePhotos[state.activeIndex];
+    const photo = state.activePhotos[state.activeIndex];
     const type = photo.type || "photo";
     const typeLabel = type === "video" ? "视频" : "照片";
     els.lightboxMedia.innerHTML = type === "video"
-      ? `<video src="${versionedSrc(photo.src)}"${photo.thumb ? ` poster="${versionedSrc(photo.thumb)}"` : ""} controls playsinline preload="metadata"></video>`
-      : `<img src="${versionedSrc(photo.src)}" alt="${photo.title}">`;
+      ? `<video src="${escapeAttr(versionedSrc(photo.src))}"${photo.thumb ? ` poster="${escapeAttr(versionedSrc(photo.thumb))}"` : ""} controls playsinline preload="metadata"></video>`
+      : `<img src="${escapeAttr(versionedSrc(photo.src))}" alt="${escapeAttr(photo.title)}">`;
     els.lightboxTitle.textContent = photo.title;
-    els.lightboxMeta.textContent = `${photo.album} · ${photoMeta(photo)} · ${typeLabel}`;
-    els.lightboxDesc.textContent = photo.description;
+    els.lightboxMeta.textContent = `${subjectLabel(photo)} · ${photoMeta(photo)} · ${typeLabel}`;
+    els.lightboxDesc.textContent = photo.description || "";
     els.lightboxLink.href = versionedSrc(photo.src);
     els.lightboxLinkText.textContent = type === "video" ? "查看视频" : "查看照片";
   }
 
   function showFeature(direction) {
-    if (!photos.length) return;
-    state.featureIndex = (state.featureIndex + direction + photos.length) % photos.length;
+    const items = photosForView(state.view);
+    if (!items.length) return;
+    state.featureIndex = (state.featureIndex + direction + items.length) % items.length;
     renderFeature();
   }
 
   function startFeatureCarousel() {
-    if (state.featureTimer || photos.length <= 1) return;
-    state.featureTimer = window.setInterval(() => {
-      showFeature(1);
-    }, 5000);
+    const items = photosForView(state.view);
+    if (state.featureTimer || items.length <= 1) return;
+    state.featureTimer = window.setInterval(() => showFeature(1), 5000);
     els.feature.dataset.carousel = "running";
   }
 
@@ -418,11 +503,8 @@
   }
 
   async function toggleMusic() {
-    if (state.musicPlaying) {
-      stopMusic();
-      return;
-    }
-    await startMusic({ userInitiated: true });
+    if (state.musicPlaying) stopMusic();
+    else await startMusic({ userInitiated: true });
   }
 
   async function startMusic(options = {}) {
@@ -487,17 +569,13 @@
 
   function requestMusicAutoplay() {
     if (!configuredMusic.autoplay) return;
-    window.setTimeout(() => {
-      startMusic({ userInitiated: false });
-    }, 250);
+    window.setTimeout(() => startMusic({ userInitiated: false }), 250);
   }
 
   async function startAudioTrack(track) {
     stopAudioTrack();
     const exists = await audioFileExists(track.src);
-    if (!exists) {
-      throw new Error("audio-missing");
-    }
+    if (!exists) throw new Error("audio-missing");
     const audio = new Audio(track.src);
     state.musicAudio = audio;
     audio.preload = "auto";
@@ -556,11 +634,10 @@
   }
 
   function scheduleTone(note, start, duration, index, wave, peak) {
-    const frequency = noteFrequency(note);
     const oscillator = state.musicContext.createOscillator();
     const gain = state.musicContext.createGain();
     oscillator.type = index % 4 === 0 ? "triangle" : wave;
-    oscillator.frequency.setValueAtTime(frequency, start);
+    oscillator.frequency.setValueAtTime(noteFrequency(note), start);
     gain.gain.setValueAtTime(0.0001, start);
     gain.gain.exponentialRampToValueAtTime(peak, start + 0.02);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
@@ -574,18 +651,10 @@
   function stopMusicNodes() {
     state.musicNodes.forEach((node) => {
       if (typeof node.stop === "function") {
-        try {
-          node.stop();
-        } catch (error) {
-          // Already stopped by the Web Audio scheduler.
-        }
+        try { node.stop(); } catch (error) { /* already stopped */ }
       }
       if (typeof node.disconnect === "function") {
-        try {
-          node.disconnect();
-        } catch (error) {
-          // Already disconnected.
-        }
+        try { node.disconnect(); } catch (error) { /* already disconnected */ }
       }
     });
     state.musicNodes = [];
@@ -603,8 +672,7 @@
     if (!match) return 440;
     const [, letter, sharp, octaveValue] = match;
     const semitones = { C: -9, D: -7, E: -5, F: -4, G: -2, A: 0, B: 2 };
-    const octave = Number(octaveValue);
-    const distance = semitones[letter] + (sharp ? 1 : 0) + (octave - 4) * 12;
+    const distance = semitones[letter] + (sharp ? 1 : 0) + (Number(octaveValue) - 4) * 12;
     return 440 * Math.pow(2, distance / 12);
   }
 
@@ -623,8 +691,7 @@
   }
 
   function toggleTheme() {
-    const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
+    setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
   }
 
   function restoreTheme() {
@@ -636,9 +703,30 @@
   function setTheme(theme) {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("lya-photo-theme", theme);
-    const icon = theme === "dark" ? "sun" : "moon";
-    els.themeToggle.innerHTML = `<i data-lucide="${icon}"></i>`;
+    els.themeToggle.innerHTML = `<i data-lucide="${theme === "dark" ? "sun" : "moon"}"></i>`;
     refreshIcons();
+  }
+
+  function normalizePhoto(photo) {
+    return {
+      ...photo,
+      type: photo.type === "video" ? "video" : "photo",
+      subject: SUBJECT_KEYS.has(photo.subject) ? photo.subject : "li-yu-an",
+      tags: Array.isArray(photo.tags) ? photo.tags : []
+    };
+  }
+
+  function photosForView(view) {
+    return view === "all" ? photos : photos.filter((photo) => photo.subject === view);
+  }
+
+  function subjectLabel(photo) {
+    return SUBJECTS[photo.subject]?.label || SUBJECTS["li-yu-an"].label;
+  }
+
+  function viewFromUrl() {
+    const view = new URLSearchParams(window.location.search).get("person");
+    return SUBJECTS[view] ? view : "all";
   }
 
   function formatDate(value) {
@@ -650,36 +738,28 @@
   }
 
   function normalize(value) {
-    return value.toLowerCase().trim();
+    return String(value || "").toLowerCase().trim();
   }
 
   function photoMeta(photo) {
     const dateText = formatDate(photo.date);
-    if (!photo.location || photo.location === "地点未提供") {
-      return dateText;
-    }
-    return `${photo.location} · ${dateText}`;
+    return !photo.location || photo.location === "地点未提供" ? dateText : `${photo.location} · ${dateText}`;
   }
 
   function renderVideoPreview(photo) {
     if (photo.thumb) {
-      return `<img src="${versionedSrc(photo.thumb)}" alt="${photo.title} 视频封面" loading="lazy" decoding="async">`;
+      return `<img src="${escapeAttr(versionedSrc(photo.thumb))}" alt="${escapeAttr(photo.title)} 视频封面" loading="lazy" decoding="async">`;
     }
-    return `<video src="${versionedSrc(photo.src)}" muted playsinline preload="metadata" aria-label="${photo.title} 视频预览"></video>`;
+    return `<video src="${escapeAttr(versionedSrc(photo.src))}" muted playsinline preload="metadata" aria-label="${escapeAttr(photo.title)} 视频预览"></video>`;
   }
 
   function refreshIcons() {
-    if (window.lucide) {
-      window.lucide.createIcons();
-    }
+    if (window.lucide) window.lucide.createIcons();
   }
 
   function withAssetVersion(src) {
-    if (!src || /^(https?:)?\/\//.test(src) || src.startsWith("data:") || src.startsWith("/api/") || src.includes("?")) {
-      return src;
-    }
-    const version = site.version || "20260619";
-    return `${src}?v=${encodeURIComponent(version)}`;
+    if (!src || /^(https?:)?\/\//.test(src) || src.startsWith("data:") || src.startsWith("/api/") || src.includes("?")) return src;
+    return `${src}?v=${encodeURIComponent(site.version || "20260812")}`;
   }
 
   function versionedSrc(src) {
@@ -691,8 +771,8 @@
       photo &&
       /^[a-z0-9-]{12,64}$/.test(String(photo.id || "")) &&
       photo.type === "photo" &&
+      SUBJECT_KEYS.has(photo.subject) &&
       typeof photo.title === "string" &&
-      typeof photo.src === "string" &&
       photo.src === `/api/family/media/${photo.id}` &&
       Number.isFinite(Number(photo.width)) &&
       Number.isFinite(Number(photo.height)) &&
@@ -701,16 +781,14 @@
   }
 
   function preloadCriticalPhotos() {
-    photos.slice(0, 6).forEach((photo, index) => {
+    photos.slice(0, 4).forEach((photo, index) => {
       const href = versionedSrc(photo.thumb || photo.src);
       if (!href) return;
       const link = document.createElement("link");
       link.rel = "preload";
       link.as = "image";
       link.href = href;
-      if (index === 0) {
-        link.fetchPriority = "high";
-      }
+      if (index === 0) link.fetchPriority = "high";
       document.head.appendChild(link);
     });
   }
@@ -736,24 +814,32 @@
   }
 
   function markImageParentLoaded(image) {
-    const parent = image.closest(".feature-photo, .hero-mini-card, .photo-media");
-    if (parent) {
-      parent.classList.add("is-loaded");
-    }
+    const parent = image.closest(".feature-photo, .photo-media");
+    if (parent) parent.classList.add("is-loaded");
   }
 
   async function audioFileExists(src) {
     try {
       const url = new URL(src, window.location.href);
       if (url.origin !== window.location.origin) return true;
-      const response = await window.fetch(url.href, {
-        method: "HEAD",
-        cache: "no-store"
-      });
+      const response = await window.fetch(url.href, { method: "HEAD", cache: "no-store" });
       return response.ok;
     } catch (error) {
       return true;
     }
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function escapeAttr(value) {
+    return escapeHtml(value);
   }
 
   init();
