@@ -1,6 +1,6 @@
 (function () {
   const site = window.PHOTO_SITE;
-  const photos = [...site.photos].sort((a, b) => new Date(b.date) - new Date(a.date));
+  let photos = [...site.photos].sort((a, b) => new Date(b.date) - new Date(a.date));
   const state = {
     album: "全部",
     query: "",
@@ -105,6 +105,38 @@
     bindEvents();
     requestMusicAutoplay();
     refreshIcons();
+    loadFamilyPhotos();
+  }
+
+  async function loadFamilyPhotos() {
+    try {
+      const response = await window.fetch("/api/family/photos", {
+        cache: "no-store",
+        credentials: "same-origin"
+      });
+      if (!response.ok) return;
+      const data = await response.json();
+      const uploaded = Array.isArray(data.photos)
+        ? data.photos.filter(validFamilyPhoto).map((photo) => ({ ...photo, dynamic: true }))
+        : [];
+      if (!uploaded.length) return;
+
+      const known = new Set(photos.map((photo) => photo.id || photo.src));
+      const newPhotos = uploaded.filter((photo) => !known.has(photo.id) && !known.has(photo.src));
+      if (!newPhotos.length) return;
+
+      photos = [...photos, ...newPhotos].sort((a, b) => new Date(b.date) - new Date(a.date));
+      state.album = "全部";
+      state.featureIndex = 0;
+      renderFeature();
+      renderHeroSummary();
+      renderHeroMiniGrid();
+      observeImageLoading(els.heroMiniGrid);
+      applyFilters();
+      restartFeatureCarousel();
+    } catch (error) {
+      // The static album remains fully available when family storage is offline.
+    }
   }
 
   function renderFeature() {
@@ -643,7 +675,7 @@
   }
 
   function withAssetVersion(src) {
-    if (!src || /^(https?:)?\/\//.test(src) || src.startsWith("data:") || src.includes("?")) {
+    if (!src || /^(https?:)?\/\//.test(src) || src.startsWith("data:") || src.startsWith("/api/") || src.includes("?")) {
       return src;
     }
     const version = site.version || "20260619";
@@ -652,6 +684,20 @@
 
   function versionedSrc(src) {
     return withAssetVersion(src);
+  }
+
+  function validFamilyPhoto(photo) {
+    return Boolean(
+      photo &&
+      /^[a-z0-9-]{12,64}$/.test(String(photo.id || "")) &&
+      photo.type === "photo" &&
+      typeof photo.title === "string" &&
+      typeof photo.src === "string" &&
+      photo.src === `/api/family/media/${photo.id}` &&
+      Number.isFinite(Number(photo.width)) &&
+      Number.isFinite(Number(photo.height)) &&
+      Array.isArray(photo.tags)
+    );
   }
 
   function preloadCriticalPhotos() {

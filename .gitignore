@@ -5,3 +5,7 @@ media/private-originals/*
 __pycache__/
 *.pyc
 work/
+node_modules/
+.env
+.env.*
+!.env.example

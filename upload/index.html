@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="LYA Photo 家庭照片上传">
+    <meta name="theme-color" content="#f6f3ec">
+    <title>上传照片 | LYA Photo</title>
+    <link rel="stylesheet" href="/styles.css?v=20260812-upload">
+    <link rel="stylesheet" href="/upload/upload.css?v=20260812-upload">
+  </head>
+  <body class="upload-page">
+    <header class="site-header upload-header">
+      <a class="brand" href="/" aria-label="返回 LYA Photo">
+        <span class="brand-mark">LYA</span>
+        <span class="brand-text">Photo</span>
+      </a>
+      <a class="icon-button" href="/" aria-label="返回相册" title="返回相册">
+        <i data-lucide="arrow-left"></i>
+      </a>
+    </header>
+
+    <main class="upload-main">
+      <section class="upload-title-band" aria-labelledby="uploadTitle">
+        <p class="eyebrow">Family upload</p>
+        <h1 id="uploadTitle">上传照片</h1>
+        <p>仅发布孩子单独出现的照片。成人合影、学校与住址信息请留在私人相册。</p>
+      </section>
+
+      <section class="auth-panel" id="loginPanel" aria-labelledby="loginTitle">
+        <div>
+          <p class="section-kicker">家庭访问</p>
+          <h2 id="loginTitle">输入家庭密码</h2>
+        </div>
+        <form class="login-form" id="loginForm">
+          <label for="familyPassword">家庭密码</label>
+          <div class="login-row">
+            <input id="familyPassword" name="password" type="password" autocomplete="current-password" required>
+            <button class="primary-button" type="submit">
+              <i data-lucide="key-round"></i>
+              <span>验证</span>
+            </button>
+          </div>
+          <p class="form-status" id="loginStatus" role="status"></p>
+        </form>
+      </section>
+
+      <section class="upload-workspace" id="uploadWorkspace" hidden aria-labelledby="workspaceTitle">
+        <div class="session-bar">
+          <div>
+            <span class="session-dot" aria-hidden="true"></span>
+            <strong>家庭发布权限已验证</strong>
+          </div>
+          <button class="text-button" id="logoutButton" type="button">退出</button>
+        </div>
+
+        <div class="upload-controls">
+          <div class="control-copy">
+            <p class="section-kicker">直接发布</p>
+            <h2 id="workspaceTitle">选择孩子的照片</h2>
+            <p>照片会压缩为最长边 1600px 的 JPEG，并移除原始定位信息。</p>
+          </div>
+
+          <label class="file-picker" for="photoInput">
+            <i data-lucide="images"></i>
+            <span>选择照片</span>
+          </label>
+          <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" multiple hidden>
+
+          <div class="metadata-fields">
+            <label>
+              <span>照片标题</span>
+              <input id="photoTitle" type="text" maxlength="60" placeholder="留空则使用拍摄日期">
+            </label>
+            <label>
+              <span>地点</span>
+              <input id="photoLocation" type="text" maxlength="40" placeholder="可留空，请勿填写具体住址">
+            </label>
+          </div>
+        </div>
+
+        <section class="queue-section" aria-labelledby="queueTitle">
+          <div class="queue-heading">
+            <div>
+              <p class="section-kicker">待发布</p>
+              <h2 id="queueTitle">照片队列 <span id="queueCount">0</span></h2>
+            </div>
+            <button class="primary-button" id="publishButton" type="button" disabled>
+              <i data-lucide="cloud-upload"></i>
+              <span>发布到相册</span>
+            </button>
+          </div>
+          <div class="upload-queue" id="uploadQueue"></div>
+          <div class="queue-empty" id="queueEmpty">
+            <i data-lucide="image-plus"></i>
+            <p>选择照片后会在这里预览</p>
+          </div>
+          <p class="form-status upload-status" id="uploadStatus" role="status"></p>
+        </section>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="/upload/upload.js?v=20260812-upload"></script>
+  </body>
+</html>

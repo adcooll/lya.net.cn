@@ -1,0 +1,12 @@
+{
+  "name": "lya-photo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@edgeone/pages-blob": "0.0.16"
+  }
+}

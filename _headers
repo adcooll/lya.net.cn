@@ -9,6 +9,9 @@
 /
   Cache-Control: no-cache, max-age=0, must-revalidate
 
+/upload/
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
 /photos.js
   Cache-Control: no-cache, max-age=0, must-revalidate
 

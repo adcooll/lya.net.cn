@@ -1,6 +1,38 @@
 # LYA Photo
 
-这是给 `lya.net.cn` 准备的纯静态家庭照片/视频浏览网站。它不需要虚拟主机、云服务器、数据库或后端程序，适合部署到 Cloudflare Pages、GitHub Pages、Netlify、Vercel 等静态托管平台。
+这是给 `lya.net.cn` 准备的家庭照片/视频浏览网站。主页使用静态资源，家庭上传功能使用 EdgeOne Pages 云函数和 Blob 存储，不需要单独购买虚拟主机或云服务器。
+
+## 家庭成员直接上传
+
+网站的 `/upload/` 页面支持手机和电脑上传。上传人输入正确的家庭密码后，可以直接发布到“家庭上传”相册，不经过管理审核。
+
+发布流程：
+
+1. 浏览器把照片缩小到最长边 1600px，重新编码为不超过 4MB 的 JPEG。
+2. 重编码会移除原始 EXIF 和 GPS，照片不会自动携带精确定位。
+3. 云函数签发 10 分钟有效的单次上传地址，浏览器直接上传到 EdgeOne Blob。
+4. 发布接口校验文件完整性和 SHA-256；同一文件不会重复发布。
+5. 主页异步加载云端照片。云函数异常时，原有静态相册仍可正常浏览。
+
+### EdgeOne 环境变量
+
+在 EdgeOne Pages 项目设置的 Production 环境中添加：
+
+```text
+FAMILY_UPLOAD_PASSWORD_HASH=<家庭密码的 SHA-256>
+FAMILY_SESSION_SECRET=<至少 32 个字符的随机密钥>
+```
+
+在 Mac 终端生成对应值：
+
+```bash
+printf '%s' '在这里输入家庭密码' | shasum -a 256
+openssl rand -hex 32
+```
+
+只把命令输出填入 EdgeOne 环境变量，不要把真实值写入仓库。配置后重新部署 Production。家庭登录会话有效期为 7 天，使用 `HttpOnly`、`Secure`、`SameSite=Strict` Cookie。
+
+当前家庭上传只接收照片，不接收视频。EdgeOne Blob 免费空间和单文件大小有限，视频直传容易快速占满容量，也更容易在移动网络下卡顿；需要视频时应单独接入视频转码或对象存储。
 
 ## 本地预览
 

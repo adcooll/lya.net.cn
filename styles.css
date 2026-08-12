@@ -187,6 +187,34 @@ a {
   height: 1.15rem;
 }
 
+.upload-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  min-height: 2.7rem;
+  padding: 0 0.85rem;
+  flex: 0 0 auto;
+  color: #fffdf8;
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 0.42rem;
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.upload-link:hover {
+  transform: translateY(-1px);
+  background: var(--accent-strong);
+}
+
+.upload-link svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
 main {
   width: min(1360px, calc(100% - 2rem));
   margin: 0 auto;
@@ -1023,6 +1051,20 @@ h1 {
 
   .search-box {
     width: 100%;
+  }
+
+  .upload-link {
+    width: 2.7rem;
+    padding: 0;
+  }
+
+  .upload-link span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
   }
 
   main {
