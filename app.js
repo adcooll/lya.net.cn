@@ -3,7 +3,7 @@
   const SUBJECTS = {
     all: {
       label: "全部时光",
-      title: "予安与予恩",
+      title: "安与恩",
       kicker: "两个孩子 · 三本相册",
       intro: "把各自的成长与一起走过的日子，放在同一个家里。",
       short: "安恩",

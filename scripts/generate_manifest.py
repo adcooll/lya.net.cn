@@ -159,7 +159,7 @@ def main() -> None:
     exported_items = load_exported_manifests()
     if exported_items:
         data = {
-            "title": "予安 · 予恩",
+            "title": "安与恩",
             "domain": "lya.net.cn",
             "version": build_version(),
             "intro": "把各自的成长与一起走过的日子，放在同一个家里。",
@@ -205,7 +205,7 @@ def main() -> None:
         items[0]["featured"] = True
 
     data = {
-        "title": "予安 · 予恩",
+        "title": "安与恩",
         "domain": "lya.net.cn",
         "version": build_version(),
         "intro": "把各自的成长与一起走过的日子，放在同一个家里。",

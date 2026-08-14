@@ -1,5 +1,5 @@
 window.PHOTO_SITE = {
-  "title": "予安 · 予恩",
+  "title": "安与恩",
   "domain": "lya.net.cn",
   "version": "20260812114129",
   "intro": "把各自的成长与一起走过的日子，放在同一个家里。",
