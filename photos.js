@@ -1,7 +1,7 @@
 window.PHOTO_SITE = {
   "title": "安与恩",
   "domain": "lya.net.cn",
-  "version": "20260812114129",
+  "version": "20260815003359",
   "intro": "把各自的成长与一起走过的日子，放在同一个家里。",
   "photos": [
     {
@@ -215,9 +215,28 @@ window.PHOTO_SITE = {
       "originalHeight": 1200
     },
     {
-      "id": "2023-10-07-img-5012",
+      "id": "2023-10-07-standing",
       "type": "photo",
       "title": "予安 12",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-10-07",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-10-07-standing.jpg",
+      "thumb": "media/public/photos-app/2023-10-07-standing.jpg",
+      "width": 1200,
+      "height": 1600,
+      "originalWidth": 1200,
+      "originalHeight": 1600
+    },
+    {
+      "id": "2023-10-07-img-5012",
+      "type": "photo",
+      "title": "予安 13",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-10-07",
@@ -236,7 +255,7 @@ window.PHOTO_SITE = {
     {
       "id": "2023-10-07-img-5010",
       "type": "photo",
-      "title": "予安 13",
+      "title": "予安 14",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-10-07",
@@ -255,7 +274,7 @@ window.PHOTO_SITE = {
     {
       "id": "2023-10-07-img-4999",
       "type": "photo",
-      "title": "予安 14",
+      "title": "予安 15",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-10-07",
@@ -274,7 +293,7 @@ window.PHOTO_SITE = {
     {
       "id": "2023-10-06-img-4992",
       "type": "photo",
-      "title": "予安 15",
+      "title": "予安 16",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-10-06",
@@ -291,9 +310,180 @@ window.PHOTO_SITE = {
       "originalHeight": 1600
     },
     {
+      "id": "2023-09-24-mom-cuddle",
+      "type": "photo",
+      "title": "予安 17",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-09-24",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-09-24-mom-cuddle.jpg",
+      "thumb": "media/public/photos-app/2023-09-24-mom-cuddle.jpg",
+      "width": 1600,
+      "height": 1200,
+      "originalWidth": 1600,
+      "originalHeight": 1200
+    },
+    {
+      "id": "2023-08-19-parent-nap",
+      "type": "photo",
+      "title": "予安 18",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-08-19",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-08-19-parent-nap.jpg",
+      "thumb": "media/public/photos-app/2023-08-19-parent-nap.jpg",
+      "width": 1200,
+      "height": 1600,
+      "originalWidth": 1200,
+      "originalHeight": 1600
+    },
+    {
+      "id": "2023-08-11-bath-towel",
+      "type": "photo",
+      "title": "予安 19",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-08-11",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-08-11-bath-towel.jpg",
+      "thumb": "media/public/photos-app/2023-08-11-bath-towel.jpg",
+      "width": 1200,
+      "height": 1600,
+      "originalWidth": 1200,
+      "originalHeight": 1600
+    },
+    {
+      "id": "2023-07-06-parent-hold",
+      "type": "photo",
+      "title": "予安 20",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-07-06",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-07-06-parent-hold.jpg",
+      "thumb": "media/public/photos-app/2023-07-06-parent-hold.jpg",
+      "width": 1600,
+      "height": 1200,
+      "originalWidth": 1600,
+      "originalHeight": 1200
+    },
+    {
+      "id": "2023-06-18-drum-play",
+      "type": "photo",
+      "title": "予安 21",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-06-18",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-06-18-drum-play.jpg",
+      "thumb": "media/public/photos-app/2023-06-18-drum-play.jpg",
+      "width": 1200,
+      "height": 1600,
+      "originalWidth": 1200,
+      "originalHeight": 1600
+    },
+    {
+      "id": "2023-06-03-family-portrait",
+      "type": "photo",
+      "title": "予安 22",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-06-03",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-06-03-family-portrait.jpg",
+      "thumb": "media/public/photos-app/2023-06-03-family-portrait.jpg",
+      "width": 1067,
+      "height": 1600,
+      "originalWidth": 1067,
+      "originalHeight": 1600
+    },
+    {
+      "id": "2023-05-28-sitting-portrait",
+      "type": "photo",
+      "title": "予安 23",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-05-28",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-05-28-sitting-portrait.jpg",
+      "thumb": "media/public/photos-app/2023-05-28-sitting-portrait.jpg",
+      "width": 1200,
+      "height": 1600,
+      "originalWidth": 1200,
+      "originalHeight": 1600
+    },
+    {
+      "id": "2023-05-22-reading-time",
+      "type": "photo",
+      "title": "予安 24",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-05-22",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-05-22-reading-time.jpg",
+      "thumb": "media/public/photos-app/2023-05-22-reading-time.jpg",
+      "width": 1600,
+      "height": 1200,
+      "originalWidth": 1600,
+      "originalHeight": 1200
+    },
+    {
+      "id": "2023-05-14-family-smile",
+      "type": "photo",
+      "title": "予安 25",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-05-14",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-05-14-family-smile.jpg",
+      "thumb": "media/public/photos-app/2023-05-14-family-smile.jpg",
+      "width": 1200,
+      "height": 1600,
+      "originalWidth": 1200,
+      "originalHeight": 1600
+    },
+    {
       "id": "4666D6F9-14CA-45F3-B46C-95BD3DDC0ABE_1_105_c",
       "type": "photo",
-      "title": "予安 16",
+      "title": "予安 26",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-04-05",
@@ -312,7 +502,7 @@ window.PHOTO_SITE = {
     {
       "id": "4EAC2621-A449-4213-B9DD-1D564C6A67DF_1_105_c",
       "type": "photo",
-      "title": "予安 17",
+      "title": "予安 27",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-04-02",
@@ -331,7 +521,7 @@ window.PHOTO_SITE = {
     {
       "id": "026B1B8B-81F6-45E0-BE87-FB90FC07B2E8_1_105_c",
       "type": "photo",
-      "title": "予安 18",
+      "title": "予安 28",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-04-02",
@@ -350,7 +540,7 @@ window.PHOTO_SITE = {
     {
       "id": "7732C3CF-1F9A-4447-BB84-54D431582C53_1_105_c",
       "type": "photo",
-      "title": "予安 19",
+      "title": "予安 29",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-04-01",
@@ -369,7 +559,7 @@ window.PHOTO_SITE = {
     {
       "id": "1EB4B795-F0EC-4781-B283-9B988C7420DC_1_105_c",
       "type": "photo",
-      "title": "予安 20",
+      "title": "予安 30",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-03-27",
@@ -388,7 +578,7 @@ window.PHOTO_SITE = {
     {
       "id": "07CE7EE1-6ED2-4FC5-846D-B2F7311803B3_1_105_c",
       "type": "photo",
-      "title": "予安 21",
+      "title": "予安 31",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-03-24",
@@ -407,7 +597,7 @@ window.PHOTO_SITE = {
     {
       "id": "187D8290-B836-413B-9143-0B0D9A89669B_1_105_c",
       "type": "photo",
-      "title": "予安 22",
+      "title": "予安 32",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-03-18",
@@ -426,7 +616,7 @@ window.PHOTO_SITE = {
     {
       "id": "23DFBCBE-3C93-42CC-ABD3-1F1B5C11CD86_1_105_c",
       "type": "photo",
-      "title": "予安 23",
+      "title": "予安 33",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-03-10",
@@ -445,7 +635,7 @@ window.PHOTO_SITE = {
     {
       "id": "30856B7B-0EE6-4B85-AED1-91EA499FAAC0_1_105_c",
       "type": "photo",
-      "title": "予安 24",
+      "title": "予安 34",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-03-09",
@@ -464,7 +654,7 @@ window.PHOTO_SITE = {
     {
       "id": "0B61EFF8-4721-4605-A467-13C7765671A0_1_105_c",
       "type": "photo",
-      "title": "予安 25",
+      "title": "予安 35",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-02-26",
@@ -483,7 +673,7 @@ window.PHOTO_SITE = {
     {
       "id": "0FFD747A-FC9F-47A9-812C-D1E9E87F0954_1_105_c",
       "type": "photo",
-      "title": "予安 26",
+      "title": "予安 36",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-02-25",
@@ -502,7 +692,7 @@ window.PHOTO_SITE = {
     {
       "id": "1CDEB61F-86A8-49C4-962C-BE60DE943D1F_1_105_c",
       "type": "photo",
-      "title": "予安 27",
+      "title": "予安 37",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-02-19",
@@ -519,9 +709,47 @@ window.PHOTO_SITE = {
       "originalHeight": 1024
     },
     {
+      "id": "2023-02-12-family-outing",
+      "type": "photo",
+      "title": "予安 38",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-02-12",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-02-12-family-outing.jpg",
+      "thumb": "media/public/photos-app/2023-02-12-family-outing.jpg",
+      "width": 1200,
+      "height": 1600,
+      "originalWidth": 1200,
+      "originalHeight": 1600
+    },
+    {
+      "id": "2023-01-28-family-smile",
+      "type": "photo",
+      "title": "予安 39",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-01-28",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-01-28-family-smile.jpg",
+      "thumb": "media/public/photos-app/2023-01-28-family-smile.jpg",
+      "width": 1600,
+      "height": 1200,
+      "originalWidth": 1600,
+      "originalHeight": 1200
+    },
+    {
       "id": "0FC3CB4A-88CB-401A-8590-CC7957582DB3_1_105_c",
       "type": "photo",
-      "title": "予安 28",
+      "title": "予安 40",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-01-23",
@@ -540,7 +768,7 @@ window.PHOTO_SITE = {
     {
       "id": "61D73F4E-C206-45D7-BF67-62A2E13DBE9C_1_105_c",
       "type": "photo",
-      "title": "予安 29",
+      "title": "予安 41",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-01-21",
@@ -557,9 +785,28 @@ window.PHOTO_SITE = {
       "originalHeight": 1024
     },
     {
+      "id": "2023-01-21-tummy-time",
+      "type": "photo",
+      "title": "予安 42",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2023-01-21",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2023-01-21-tummy-time.jpg",
+      "thumb": "media/public/photos-app/2023-01-21-tummy-time.jpg",
+      "width": 1600,
+      "height": 1200,
+      "originalWidth": 1600,
+      "originalHeight": 1200
+    },
+    {
       "id": "6A19E1AA-B465-44AA-8C53-CD74BFEB9EC8_1_105_c",
       "type": "photo",
-      "title": "予安 30",
+      "title": "予安 43",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2023-01-09",
@@ -578,7 +825,7 @@ window.PHOTO_SITE = {
     {
       "id": "E267944E-B06A-4EB5-A96A-99D6CA4738AF_1_105_c",
       "type": "photo",
-      "title": "予安 31",
+      "title": "予安 44",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2022-12-31",
@@ -597,7 +844,7 @@ window.PHOTO_SITE = {
     {
       "id": "0BB236FC-B96A-4CC6-91DC-BF84A17970C6_1_105_c",
       "type": "photo",
-      "title": "予安 32",
+      "title": "予安 45",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2022-12-22",
@@ -616,7 +863,7 @@ window.PHOTO_SITE = {
     {
       "id": "96B83671-97CA-4C20-BF5E-46014F900031_1_105_c",
       "type": "photo",
-      "title": "予安 33",
+      "title": "予安 46",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2022-12-21",
@@ -635,7 +882,7 @@ window.PHOTO_SITE = {
     {
       "id": "2C3FB6B0-994F-41FB-857C-1B8DDDEAEFFE_1_105_c",
       "type": "photo",
-      "title": "予安 34",
+      "title": "予安 47",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2022-12-16",
@@ -654,7 +901,7 @@ window.PHOTO_SITE = {
     {
       "id": "0D5BD1B8-5FFA-47AD-8E52-786373FE33A2_1_105_c",
       "type": "photo",
-      "title": "予安 35",
+      "title": "予安 48",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2022-12-16",
@@ -671,9 +918,28 @@ window.PHOTO_SITE = {
       "originalHeight": 1024
     },
     {
+      "id": "2022-11-23-newborn",
+      "type": "photo",
+      "title": "予安 49",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2022-11-23",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2022-11-23-newborn.jpg",
+      "thumb": "media/public/photos-app/2022-11-23-newborn.jpg",
+      "width": 1600,
+      "height": 1200,
+      "originalWidth": 1600,
+      "originalHeight": 1200
+    },
+    {
       "id": "17FE0856-1996-4E7C-9987-E87CEFD3405B_1_105_c",
       "type": "photo",
-      "title": "予安 36",
+      "title": "予安 50",
       "album": "成长记录",
       "subject": "li-yu-an",
       "date": "2022-11-09",
@@ -688,6 +954,25 @@ window.PHOTO_SITE = {
       "height": 768,
       "originalWidth": 1024,
       "originalHeight": 768
+    },
+    {
+      "id": "2022-11-03-dad-selfie",
+      "type": "photo",
+      "title": "予安 51",
+      "album": "成长记录",
+      "subject": "li-yu-an",
+      "date": "2022-11-03",
+      "location": "地点未提供",
+      "description": "李予安的成长记录。",
+      "tags": [
+        "孩子"
+      ],
+      "src": "media/public/photos-app/2022-11-03-dad-selfie.jpg",
+      "thumb": "media/public/photos-app/2022-11-03-dad-selfie.jpg",
+      "width": 1600,
+      "height": 1200,
+      "originalWidth": 1600,
+      "originalHeight": 1200
     }
   ]
 };

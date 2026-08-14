@@ -51,8 +51,8 @@ python3 -m http.server 8000
 ### 推荐流程：先建孩子相册，再自动导出
 
 1. 在“照片”App 里打开“人物与宠物”或你已经建好的孩子相册。
-2. 只选择适合公开的孩子照片或短视频，避开成年人正脸、其他孩子、校服、车牌、门牌、学校名、快递单等敏感信息。
-3. 新建一个只含孩子素材的相册，例如 `LYA Kids Web`。
+2. 只选择至少包含李予安或李予恩、且适合公开的照片或短视频；允许与家人合照，但仍需避开其他孩子、校服、车牌、门牌、学校名、快递单等敏感信息。
+3. 连拍或同一场景只保留一张构图、表情最好的代表照片，再放入发布相册，例如 `LYA Family Web`。
 4. 授权本地导出工具读取 Photos 图库。
 5. 导出这个相册到网站目录。
 
@@ -61,7 +61,7 @@ python3 -m http.server 8000
 ```bash
 clang -fobjc-arc -framework Foundation -framework AppKit -framework Photos scripts/export_photos_objc.m -o scripts/export_photos_objc
 scripts/export_photos_objc --list-albums --include-videos
-scripts/export_photos_objc --album "LYA Kids Web" --limit 80 --include-videos
+scripts/export_photos_objc --album "LYA Family Web" --limit 80 --include-videos
 python3 scripts/generate_manifest.py
 cp photos.generated.js photos.js
 ```
@@ -80,7 +80,7 @@ cp photos.generated.js photos.js
 
 如果你不想授权自动工具，也可以在“照片”App 手动导出：
 
-1. 选择孩子相册里的发布素材。
+1. 选择至少包含一个孩子的发布素材，允许与家人合照；同一场景只选择一张。
 2. 菜单选择“文件 -> 导出 -> 导出照片/视频”。
 3. 导出时尽量选择 JPEG、较高或中等质量，不要导出未经筛选的原始文件。
 4. 把发布版文件放到 `media/public/`，例如：
@@ -221,6 +221,7 @@ cp photos.generated.js photos.js
 - 不放原图，先压缩、裁剪、去除 EXIF/GPS。
 - 不出现成年人正脸，除非已经获得同意。
 - 不出现其他孩子正脸，除非其监护人同意。
+- 连拍或高度相似的场景只发布一张代表照片。
 - 不出现学校、班级、住址、门牌、车牌、证件、快递单。
 - 不写精确拍摄地点和日常固定行程。
 - 真正私密的家庭相册不要做成公开静态站，可考虑 Cloudflare Access 之类的访问控制。
