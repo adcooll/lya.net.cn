@@ -520,7 +520,7 @@
           state.musicAutoplayBlocked = !options.userInitiated;
           state.musicMessage = options.userInitiated ? "浏览器暂时禁止播放" : "";
         } else if (error.message === "audio-missing") {
-          state.musicMessage = "请添加贝乐虎 MP3";
+          state.musicMessage = "请添加儿歌音频";
         } else {
           state.musicMessage = "音频暂时无法播放";
         }

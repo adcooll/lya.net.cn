@@ -2,12 +2,14 @@
 
 把你已经购买、获得授权或确认可公开使用的儿歌 MP3 放到这个目录。
 
-当前 `music.js` 默认读取：
+当前 `music.js` 默认读取以下欢快儿歌：
 
-- `media/audio/belehu-01.mp3`
-- `media/audio/belehu-02.mp3`
-- `media/audio/belehu-03.mp3`
+- `media/audio/five-little-monkeys.mp3`
+- `media/audio/bingo.mp3`
+- `media/audio/if-youre-happy.mp3`
+- `media/audio/wheels-on-the-bus.mp3`
+- `media/audio/baby-shark.mp3`
 
-如果文件名不同，编辑网站根目录的 `music.js`，把 `src` 改成对应文件路径即可。
+完整播放列表和曲名配置在网站根目录的 `music.js` 中。
 
-不要把未授权的贝乐虎、迪士尼、汪汪队等版权音乐直接上传到公开网站。
+这些音频来自本机下载目录；个人使用之外的公开传播，请确认对应录音的使用权限。

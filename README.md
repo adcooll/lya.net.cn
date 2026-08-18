@@ -122,19 +122,19 @@ cp photos.generated.js photos.js
 
 ## 儿歌音乐
 
-网站支持播放你放在 `media/audio/` 里的本地 MP3。默认配置在 `music.js`：
+网站支持播放你放在 `media/audio/` 里的本地 MP3。当前配置为欢快儿歌播放列表，默认配置在 `music.js`：
 
 ```js
 window.LYA_MUSIC = {
-  intro: "贝乐虎儿歌",
+  intro: "欢快儿歌",
   autoplay: true,
   tracks: [
-    { title: "贝乐虎儿歌 01", src: "media/audio/belehu-01.mp3" }
+    { title: "Five Little Monkeys", src: "media/audio/five-little-monkeys.mp3" }
   ]
 };
 ```
 
-把已购买、获得授权或确认可公开使用的贝乐虎儿歌 MP3 放到 `media/audio/`，再按实际文件名修改 `music.js`。不要把未授权的贝乐虎、迪士尼、汪汪队等版权音乐上传到公开网站。
+把你已经获得授权或确认可公开使用的 MP3 放到 `media/audio/`，再按实际文件名修改 `music.js`。个人使用也建议保留版权来源记录。
 
 浏览器通常会拦截“未点击页面就自动播放有声音乐”。网站已经会自动尝试播放；如果浏览器拦截，会在播放器里提示“点一下播放儿歌”，用户点击播放按钮后就会继续循环播放。
 
@@ -179,7 +179,7 @@ cp photos.generated.js photos.js
 - 域名 `lya.net.cn` 的 DNS 管理权限。
 - 一个 Cloudflare 账号。
 - 本网站目录里的全部文件。
-- 如果要播放贝乐虎儿歌，需要准备已授权 MP3 文件并放到 `media/audio/`。
+- 如果要增加其他儿歌，需要准备音频文件并放到 `media/audio/`，再加入 `music.js` 播放列表。
 - 上线前检查所有照片不包含成人正脸、其他孩子、学校/住址/车牌等敏感信息。
 
 ### 方案 A：Cloudflare Pages
